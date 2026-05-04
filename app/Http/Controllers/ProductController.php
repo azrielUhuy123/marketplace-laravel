@@ -9,9 +9,6 @@ class ProductController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
 
         $store = auth()->user()->store;
         $products = $store ? $store->products : [];
@@ -21,9 +18,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
+
 
         if (!auth()->user()->store) {
             return redirect('/store/create')->with('error', 'Buat toko dulu');
@@ -34,9 +29,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
+
 
         $request->validate([
             'name' => 'required',
@@ -60,9 +53,7 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
+
 
         $product = Product::where('id', $id)
             ->where('store_id', auth()->user()->store->id)
@@ -73,9 +64,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
+
 
         $product = Product::where('id', $id)
             ->where('store_id', auth()->user()->store->id)
@@ -93,9 +82,7 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
+
 
         $product = Product::where('id', $id)
             ->where('store_id', auth()->user()->store->id)

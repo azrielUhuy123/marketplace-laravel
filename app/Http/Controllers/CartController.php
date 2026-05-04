@@ -11,9 +11,7 @@ class CartController extends Controller
 {
     public function index()
     {
-        if (auth()->user()->role !== 'customer') {
-            abort(403);
-        }
+
 
         $cart = auth()->user()->cart;
         $items = $cart ? $cart->items()->with('product')->get() : [];
@@ -23,9 +21,7 @@ class CartController extends Controller
 
     public function add($id)
     {
-        if (auth()->user()->role !== 'customer') {
-            abort(403);
-        }
+
 
         $product = Product::findOrFail($id);
 
@@ -60,9 +56,6 @@ class CartController extends Controller
 
     public function remove($id)
     {
-        if (auth()->user()->role !== 'customer') {
-            abort(403);
-        }
 
         CartItem::where('id', $id)
             ->whereHas('cart', function ($q) {

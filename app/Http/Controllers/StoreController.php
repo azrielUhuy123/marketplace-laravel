@@ -9,18 +9,13 @@ class StoreController extends Controller
 {
     public function create()
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
 
         return view('store.create');
     }
 
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'seller') {
-            abort(403);
-        }
+
 
         if (auth()->user()->store) {
             return redirect('/')->with('error', 'Kamu sudah punya toko');

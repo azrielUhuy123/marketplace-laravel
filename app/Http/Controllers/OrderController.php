@@ -35,7 +35,14 @@ class OrderController extends Controller
             ->where('store_id', $user->store->id)
             ->firstOrFail();
 
-        $order->update(['status' => 'processed']);
+        // VALIDASI STATUS
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Order tidak valid');
+        }
+
+        $order->update([
+            'status' => 'processed'
+        ]);
 
         return back()->with('success', 'Order diproses');
     }
@@ -50,10 +57,12 @@ class OrderController extends Controller
 
         $order = Order::findOrFail($id);
 
+        // VALIDASI STATUS
         if ($order->status !== 'processed') {
             return back()->with('error', 'Order belum diproses');
         }
 
+        // CEGAH DUPLIKASI
         if ($order->shipment) {
             return back()->with('error', 'Sudah dikirim');
         }
@@ -76,11 +85,23 @@ class OrderController extends Controller
         }
 
         $shipment = Shipment::where('order_id', $id)
-            ->whereHas('order', fn($q) => $q->where('user_id', $user->id))
+            ->whereHas('order', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
             ->firstOrFail();
 
-        $shipment->update(['status' => 'delivered']);
-        $shipment->order->update(['status' => 'completed']);
+        // VALIDASI STATUS
+        if ($shipment->status !== 'shipped') {
+            return back()->with('error', 'Belum dikirim');
+        }
+
+        $shipment->update([
+            'status' => 'delivered'
+        ]);
+
+        $shipment->order->update([
+            'status' => 'completed'
+        ]);
 
         return back()->with('success', 'Barang diterima');
     }

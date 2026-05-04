@@ -2,102 +2,71 @@
 <html>
 <head>
     <title>Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+<body class="bg-gray-100">
 
-        a {
-            text-decoration: none;
-            margin-right: 10px;
-        }
+<div class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Marketplace</h1>
 
-        h2 {
-            margin-top: 20px;
-        }
+    <div>
+        <a href="/" class="mr-3">Home</a>
 
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+        @auth
+            @if(auth()->user()->role == 'seller')
+                <a href="/product" class="mr-3">Product</a>
+                <a href="/order" class="mr-3">Order</a>
+                @if(!auth()->user()->store)
+                    <a href="/store/create">Create Store</a>
+                @endif
+            @endif
 
-        li {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
+            @if(auth()->user()->role == 'customer')
+                <a href="/cart" class="mr-3">Cart</a>
+                <a href="/checkout" class="mr-3">Checkout</a>
+                <a href="/order">Order</a>
+            @endif
 
-        button {
-            margin-top: 5px;
-            padding: 5px 10px;
-        }
+            @if(auth()->user()->role == 'logistic')
+                <a href="/order">Order</a>
+            @endif
+        @endauth
+    </div>
 
-        hr {
-            margin: 20px 0;
-        }
-    </style>
+    <div>
+        @auth
+            <span class="mr-3 text-sm">
+                {{ auth()->user()->name }} ({{ auth()->user()->role }})
+            </span>
 
-    <h2>Marketplace System</h2>
+            <form method="POST" action="/logout" class="inline">
+                @csrf
+                <button class="bg-red-500 text-white px-3 py-1 rounded">
+                    Logout
+                </button>
+            </form>
+        @else
+            <a href="/login" class="mr-3">Login</a>
+            <a href="/register">Register</a>
+        @endauth
+    </div>
+</div>
 
-    <hr>
-
-    <!-- NAVBAR -->
-    <a href="/">Home</a> |
-
-    @auth
-
-        @if(auth()->user()->role == 'seller')
-            <a href="/product">Product</a> |
-            <a href="/order">Order</a> |
-            <a href="/store/create">Create Store</a>
-        @endif
-
-        @if(auth()->user()->role == 'customer')
-            <a href="/cart">Cart</a> |
-            <a href="/checkout">Checkout</a> |
-            <a href="/order">Order</a>
-        @endif
-
-        @if(auth()->user()->role == 'logistic')
-            <a href="/order">Order</a>
-        @endif
-
-    @endauth
-
-    <hr>
-
-    @auth
-        <p>
-            Login sebagai: {{ auth()->user()->name }} 
-            ({{ auth()->user()->role }})
-        </p>
-
-        <form method="POST" action="/logout">
-            @csrf
-            <button type="submit">Logout</button>
-        </form>
-    @else
-        <a href="/login">Login</a> |
-        <a href="/register">Register</a>
-    @endauth
-
-    <hr>
-    <hr>
-
-    <!-- MESSAGE -->
+<div class="p-6">
     @if(session('success'))
-        <p style="color:green">{{ session('success') }}</p>
+        <div class="bg-green-200 p-2 mb-4 rounded">
+            {{ session('success') }}
+        </div>
     @endif
 
     @if(session('error'))
-        <p style="color:red">{{ session('error') }}</p>
+        <div class="bg-red-200 p-2 mb-4 rounded">
+            {{ session('error') }}
+        </div>
     @endif
 
-    <!-- CONTENT -->
     @yield('content')
+</div>
 
-    </body>
+</body>
 </html>
